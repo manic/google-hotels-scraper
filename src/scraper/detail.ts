@@ -18,14 +18,16 @@ export const getHotelItemData = async <Context extends PlaywrightCrawlingContext
     request: LoadedRequest<Request>;
 }): Promise<GoogleHotelItemData> => {
     const { page, log } = ctx;
-    const title = await page.locator('h1[role="heading"]').last().innerText();
 
+    const title = await page.locator('h1[role="heading"]').last().innerText();
     const url = page.url();
 
-    const pricesTab = await page.waitForSelector('div[id="prices"]');
-    const reviewsTab = await page.waitForSelector('div[id="reviews"]');
-    const photosTab = await page.waitForSelector('div[id="photos"]');
-    const aboutTab = await page.waitForSelector('div[id="details"]');
+    const [pricesTab, reviewsTab, aboutTab, photosTab] = await Promise.all([
+        page.waitForSelector('div[id="prices"]'),
+        page.waitForSelector('div[id="reviews"]'),
+        page.waitForSelector('div[id="details"]'),
+        page.waitForSelector('div[id="photos"]'),
+    ]);
 
     await pricesTab.click();
     const pricesBtns = await page.locator('button[aria-label^="Visit site for"]').all();
