@@ -63,7 +63,9 @@
             "title": "Max Requests per Crawl",
             "type": "integer",
             "description": "Maximum number of requests that can be made by this crawler.",
-            "default": 5
+            "default": 5,
+            "prefill": 5,
+            "example": 5
         }
     },
     "required": [
