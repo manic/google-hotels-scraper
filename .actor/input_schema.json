@@ -8,6 +8,7 @@
             "type": "string",
             "description": "Query to search on google travel hotels.",
             "example": "Prague",
+            "prefill": "Prague",
             "editor": "textfield"
         },
         "checkInDate": {
@@ -15,6 +16,7 @@
             "type": "string",
             "description": "Check-in date for hotels search. Format: YYYY-MM-DD.",
             "example": "2024-09-01",
+            "prefill": "2024-12-01",
             "editor": "textfield"
         },
         "checkOutDate": {
@@ -22,6 +24,7 @@
             "type": "string",
             "description": "Check-out date for hotels search. Format: YYYY-MM-DD.",
             "example": "2024-09-02",
+            "prefill": "2024-12-05",
             "editor": "textfield"
         },
         "numberOfAdults": {
