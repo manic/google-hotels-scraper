@@ -16,10 +16,10 @@ const input = await Actor.getInput<Input>() ?? {} as Input;
 
 // validate inputs format
 if (input.checkInDate.match(/^\d{4}-\d{2}-\d{2}$/) === null) {
-    throw new Error('Invalid check-in date format. Use YYYY-MM-DD.');
+    await Actor.exit('Invalid check-in date format. Use YYYY-MM-DD.', { exitCode: 1 });
 }
 if (input.checkOutDate.match(/^\d{4}-\d{2}-\d{2}$/) === null) {
-    throw new Error('Invalid check-out date format. Use YYYY-MM-DD.');
+    await Actor.exit('Invalid check-out date format. Use YYYY-MM-DD.', { exitCode: 1 });
 }
 
 const proxyConfiguration = await Actor.createProxyConfiguration(input.proxyConfig);
@@ -34,7 +34,11 @@ const crawler = new PlaywrightCrawler({
     requestHandler: createGoogleHotelsRouter(input),
 });
 
-await crawler.run([`https://www.google.com/travel/search?q=${encodeURIComponent(searchQuery)}&hl=${CONTENT_LANGUAGE_CODE}`]);
+try {
+    await crawler.run([`https://www.google.com/travel/search?q=${encodeURIComponent(searchQuery)}&hl=${CONTENT_LANGUAGE_CODE}`]);
+} catch (error) {
+    await Actor.exit({ exitCode: 1 });
+}
 
 // Exit successfully
 await Actor.exit();
