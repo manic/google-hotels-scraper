@@ -74,7 +74,7 @@ export const getHotelItemData = async <Context extends PlaywrightCrawlingContext
 
     let address: string | undefined;
     if (await page.locator('span[aria-label*="hotel address is"]').count()) {
-        address = await page.locator('span[aria-label*="hotel address is"]').getAttribute('href') || undefined;
+        address = await page.locator('span[aria-label*="hotel address is"]').innerText() || undefined;
     }
     let website: string | undefined;
     if (await page.locator('a[aria-label="Website"]').count()) {
