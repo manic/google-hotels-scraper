@@ -9,12 +9,12 @@ Example of looking for prices in Prague for 2 adults from 2024-12-24 to 2024-12-
 
 ```json
 {
-    "searchQuery": "Prague",
+    "entity": "CgsIx6il8vyxnYHRARAB",
     "checkInDate": "2022-12-24",
     "checkOutDate": "2022-12-26",
     "numberOfAdults": 2,
     "numberOfChildren": 0,
-    "currencyCode": "EUR",
+    "currencyCode": "JPY",
     "maxResults": 100
 }
 ```

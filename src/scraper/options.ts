@@ -1,5 +1,5 @@
 export interface GoogleHotelsOptions {
-    searchQuery: string;
+    entity: string;
     checkInDate: string;
     checkOutDate: string;
     numberOfAdults: number;
