@@ -7,45 +7,25 @@
             "description": "Overview of all scraped hotels",
             "transformation": {
                 "fields": [
-                    "thumbnail",
                     "title",
-                    "address",
-                    "rating",
-                    "reviews",
-                    "priceRange",
-                    "url"
+                    "url",
+                    "prices"
                 ]
             },
             "display": {
                 "component": "table",
                 "properties": {
-                    "thumbnail": {
-                        "label": "Thumbnail",
-                        "format": "image"
-                    },
                     "title": {
                         "label": "Hotel name",
-                        "format": "text"
-                    },
-                    "address": {
-                        "label": "Address",
-                        "format": "text"
-                    },
-                    "rating": {
-                        "label": "Rating",
-                        "format": "text"
-                    },
-                    "reviews": {
-                        "label": "Number of reviews",
-                        "format": "text"
-                    },
-                    "priceRange": {
-                        "label": "Price range",
                         "format": "text"
                     },
                     "url": {
                         "label": "URL",
                         "format": "link"
+                    },
+                    "prices": {
+                        "label": "Prices",
+                        "format": "array"
                     }
                 }
             }

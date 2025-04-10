@@ -3,12 +3,12 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
-        "searchQuery": {
-            "title": "Search query",
+        "entity": {
+            "title": "Entity",
             "type": "string",
-            "description": "Query to search on google travel hotels.",
-            "example": "Prague",
-            "prefill": "Prague",
+            "description": "Google Hotel Entity",
+            "example": "CgsIx6il8vyxnYHRARAB",
+            "prefill": "CgsIx6il8vyxnYHRARAB",
             "editor": "textfield"
         },
         "checkInDate": {
@@ -72,7 +72,7 @@
         }
     },
     "required": [
-        "searchQuery",
+        "entity",
         "checkInDate",
         "checkOutDate",
         "numberOfAdults",

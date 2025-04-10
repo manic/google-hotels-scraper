@@ -50,7 +50,7 @@ export const getDetailsUrls = async <Context extends PlaywrightCrawlingContext>(
     } while (hasNextPage);
 };
 
-const fillInputForm = async (page: Page, options: GoogleHotelsOptions) => {
+export const fillInputForm = async (page: Page, options: GoogleHotelsOptions) => {
     let checkInElement = await page.waitForSelector('input[aria-label="Check-in"]');
 
     await checkInElement.click();
@@ -71,6 +71,7 @@ const fillInputForm = async (page: Page, options: GoogleHotelsOptions) => {
     const submitButton = await page.waitForSelector('div[role="dialog"] > div:nth-of-type(4) > div > button:nth-of-type(2)');
     await submitButton.click();
 
+    /*
     const peopleButton = await page.waitForSelector('div[role="button"][aria-label^="Number of travelers"]');
     await peopleButton.click();
     await page.waitForTimeout(1000);
@@ -103,7 +104,7 @@ const fillInputForm = async (page: Page, options: GoogleHotelsOptions) => {
         'div[data-default-adult-num="2"] > div > div > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > button',
     );
     await peopleDoneButton.click();
-
+    */
     const currencyButton = await page.waitForSelector('footer div c-wiz button');
     await currencyButton.click();
     await page.waitForTimeout(1000);

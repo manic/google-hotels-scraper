@@ -24,7 +24,7 @@ if (input.checkOutDate.match(/^\d{4}-\d{2}-\d{2}$/) === null) {
 
 const proxyConfiguration = await Actor.createProxyConfiguration(input.proxyConfig);
 const {
-    searchQuery,
+    entity,
     maxRequestsPerCrawl = DEFAULT_MAX_REQUESTS_PER_CRAWL,
 } = input;
 
@@ -35,7 +35,7 @@ const crawler = new PlaywrightCrawler({
 });
 
 try {
-    await crawler.run([`https://www.google.com/travel/search?q=${encodeURIComponent(searchQuery)}&hl=${CONTENT_LANGUAGE_CODE}`]);
+    await crawler.run([`https://www.google.com/travel/hotels/entity/${entity}?hl=${CONTENT_LANGUAGE_CODE}`]);
 } catch (error) {
     await Actor.exit({ exitCode: 1 });
 }
