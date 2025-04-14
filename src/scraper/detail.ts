@@ -3,7 +3,7 @@ import { LoadedRequest, PlaywrightCrawlingContext, Request } from 'crawlee';
 export interface GoogleHotelItemData {
     url: string;
     title: string;
-    prices: { provider: string, price: number }[];
+    prices: { provider: string, price: number, otaUrl: string, label: string }[];
 }
 
 export const getHotelItemData = async <Context extends PlaywrightCrawlingContext>(ctx: Omit<Context, 'request'> & {
@@ -22,12 +22,17 @@ export const getHotelItemData = async <Context extends PlaywrightCrawlingContext
 
     await pricesTab.click();
 
-    const pricesDivs = await page.locator('div.ADs2Tc div.zIL9xf.xIAdxb').all();
-    const prices = (await Promise.all(pricesDivs.map(async (div) => {
-        const provider = await div.locator('div.lUblwd.kFOiFc span[data-click-type="268"]').first().innerText();
-        const textPrice = await div.locator('span.QoBrxc span.nDkDDb').first().innerText();
+    const pricesLinks = await page.locator('div[data-partner-id] a[data-hveid]').all();
+    const prices = (await Promise.all(pricesLinks.map(async (link) => {
+        const otaUrl = await link.getAttribute('href');
+        const provider = await link.locator('div.lUblwd.kFOiFc span[data-click-type="268"]').first().innerText();
+        const textPrice = await link.locator('span.QoBrxc span.nDkDDb').first().innerText();
         const price = parseFloat(textPrice.replace(/[^0-9.]/g, ''));
-        return { provider, price }
+        let label = 'ota';
+        if (await link.locator('span.Dwqcqd').count()) {
+            label = 'official';
+        }
+        return { provider, price, otaUrl, label }
     }))).filter((price, i, arr) => price !== null && arr.findIndex((o) => o?.provider === price.provider) === i) as GoogleHotelItemData['prices'];
     log.info(`Got`, { prices: prices })
 
