@@ -23,3 +23,9 @@ export const waitWhileGoogleLoading = async (page: Page) => {
         return !(loader?.checkVisibility() ?? false);
     });
 };
+
+export const addOneDayToDate = (date: string) => {
+    const dateObj = new Date(date);
+    dateObj.setDate(dateObj.getDate() + 1);
+    return dateObj.toISOString().split('T')[0];
+};
