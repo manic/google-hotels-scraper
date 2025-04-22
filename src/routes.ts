@@ -24,15 +24,18 @@ export const createGoogleHotelsRouter = (options: GoogleHotelsOptions) => {
         const item = await getHotelItemData(ctx);
         await Dataset.pushData({ ...item, checkInDate, checkOutDate });
 
-        checkInDate = addOneDayToDate(checkInDate);
-        checkOutDate = addOneDayToDate(checkOutDate);
-        log.info(`[2nd] fill checkin-date: ${checkInDate}, checkout-date: ${checkOutDate}`);
-        await fillCheckInDate(page, checkInDate, checkOutDate);
-        await waitWhileGoogleLoading(page);
-        await page.waitForTimeout(1000);
+        // TODO: get next 10 days data, would try to get 60 days
+        for (let i = 0; i < 10; i++) {
+            checkInDate = addOneDayToDate(checkInDate);
+            checkOutDate = addOneDayToDate(checkOutDate);
+            log.info(`[${i + 2}] fill checkin-date: ${checkInDate}, checkout-date: ${checkOutDate}`);
+            await fillCheckInDate(page, checkInDate, checkOutDate);
+            await waitWhileGoogleLoading(page);
+            await page.waitForTimeout(1000);
 
-        const item2 = await getHotelItemData(ctx);
-        await Dataset.pushData({ ...item2, checkInDate, checkOutDate });
+            const hotelItem = await getHotelItemData(ctx);
+            await Dataset.pushData({ ...hotelItem, checkInDate, checkOutDate });
+        }
     });
 
     return router;
