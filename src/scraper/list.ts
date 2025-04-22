@@ -50,7 +50,7 @@ export const getDetailsUrls = async <Context extends PlaywrightCrawlingContext>(
     } while (hasNextPage);
 };
 
-export const fillInputForm = async (page: Page, options: GoogleHotelsOptions) => {
+export const fillCheckInDate = async (page: Page, checkInDate: string, checkOutDate: string) => {
     const checkInLocator = page.locator('input[aria-label="Check-in"]').last();
     await checkInLocator.waitFor();
     await checkInLocator.click();
@@ -65,15 +65,18 @@ export const fillInputForm = async (page: Page, options: GoogleHotelsOptions) =>
     await checkInLocatorDialog.waitFor();
     await checkOutLocatorDialog.waitFor();
 
-    await checkInLocatorDialog.fill(options.checkInDate);
+    await checkInLocatorDialog.fill(checkInDate);
     await checkOutLocatorDialog.click();
     await page.waitForTimeout(1000);
-    await checkOutLocatorDialog.fill(options.checkOutDate);
+    await checkOutLocatorDialog.fill(checkOutDate);
     await checkOutLocatorDialog.press('Enter');
 
     const submitButton = await page.waitForSelector('div[role="dialog"] > div:nth-of-type(4) > div > button:nth-of-type(2)');
     await submitButton.click();
+};
 
+export const fillInputForm = async (page: Page, options: GoogleHotelsOptions) => {
+    await fillCheckInDate(page, options.checkInDate, options.checkOutDate);
     /*
     const peopleButton = await page.waitForSelector('div[role="button"][aria-label^="Number of travelers"]');
     await peopleButton.click();
