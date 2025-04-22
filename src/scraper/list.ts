@@ -51,22 +51,25 @@ export const getDetailsUrls = async <Context extends PlaywrightCrawlingContext>(
 };
 
 export const fillInputForm = async (page: Page, options: GoogleHotelsOptions) => {
-    let checkInElement = await page.waitForSelector('input[aria-label="Check-in"]');
+    const checkInLocator = page.locator('input[aria-label="Check-in"]').last();
+    await checkInLocator.waitFor();
+    await checkInLocator.click();
 
-    await checkInElement.click();
-
-    checkInElement = await page.waitForSelector(
+    const checkInLocatorDialog = page.locator(
         'div[role="dialog"] > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div > div > input[aria-label="Check-in"]',
     );
-    const checkOutElement = await page.waitForSelector(
+    const checkOutLocatorDialog = page.locator(
         'div[role="dialog"] > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div > div > input[aria-label="Check-out"]',
     );
 
-    await checkInElement.fill(options.checkInDate);
-    await checkOutElement.click();
+    await checkInLocatorDialog.waitFor();
+    await checkOutLocatorDialog.waitFor();
+
+    await checkInLocatorDialog.fill(options.checkInDate);
+    await checkOutLocatorDialog.click();
     await page.waitForTimeout(1000);
-    await checkOutElement.fill(options.checkOutDate);
-    await checkOutElement.press('Enter');
+    await checkOutLocatorDialog.fill(options.checkOutDate);
+    await checkOutLocatorDialog.press('Enter');
 
     const submitButton = await page.waitForSelector('div[role="dialog"] > div:nth-of-type(4) > div > button:nth-of-type(2)');
     await submitButton.click();
@@ -105,7 +108,8 @@ export const fillInputForm = async (page: Page, options: GoogleHotelsOptions) =>
     );
     await peopleDoneButton.click();
     */
-    const currencyButton = await page.waitForSelector('footer div c-wiz button');
+    const currencyButton = await page.locator('footer div c-wiz button').last();
+    await currencyButton.waitFor();
     await currencyButton.click();
     await page.waitForTimeout(1000);
     const requiredCurrency = options.currencyCode;

@@ -8,7 +8,7 @@ export const createGoogleHotelsRouter = (options: GoogleHotelsOptions) => {
     const router = createPlaywrightRouter();
 
     router.addDefaultHandler(async (ctx) => {
-        const { request, page, log, enqueueLinks } = ctx;
+        const { request, page, log } = ctx;
         log.info(`parsing Google Hotel`, { url: request.loadedUrl });
         log.info(`Got options`, options);
 

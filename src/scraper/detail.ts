@@ -16,11 +16,6 @@ export const getHotelItemData = async <Context extends PlaywrightCrawlingContext
     const currency = await page.locator('span.twocKe').first().innerText();
     log.info(`Check`, { currency: currency });
     log.info(`Parsed detail (${title})`, { url: page.url() });
-    const [pricesTab] = await Promise.all([
-        page.waitForSelector('div[id="prices"]'),
-    ]);
-
-    await pricesTab.click();
 
     const pricesLinks = await page.locator('div[data-partner-id] a[data-hveid]').all();
     const prices = (await Promise.all(pricesLinks.map(async (link) => {
