@@ -1,57 +1,9 @@
 import { Page } from 'playwright';
-import { LoadedRequest, PlaywrightCrawlingContext, Request } from 'crawlee';
 import { waitWhileGoogleLoading } from './utils.js';
 import { GoogleHotelsOptions } from './options.js';
-import { DEFAULT_NUM_OF_ADULTS, DEFAULT_NUM_OF_CHILDREN, MAX_NUM_OF_PEOPLE } from '../constants.js';
-
-// define type for callback function
-type EnqueueDetails = (urls: string[]) => Promise<void>;
-
-export const getDetailsUrls = async <Context extends PlaywrightCrawlingContext>(ctx: Omit<Context, 'request'> & {
-    request: LoadedRequest<Request>;
-}, options: GoogleHotelsOptions, enqueueDetails: EnqueueDetails) => {
-    const { page, log } = ctx;
-    // Wait for the input element to be present and the page to be loaded
-    const element = await page.waitForSelector('input[aria-label="Search for places, hotels and more"]');
-    log.info(await element.inputValue());
-
-    await fillInputForm(page, options);
-    await waitWhileGoogleLoading(page);
-    await page.waitForTimeout(1000);
-
-    // const nextPageButtonSelector = 'main > c-wiz > span > c-wiz > c-wiz:last-of-type > div > button:nth-of-type(2)';
-    let hasNextPage = true;
-    let pageNumber = 1;
-    let totalItems = 0;
-    do {
-        const items = await page.$$('main > c-wiz > span > c-wiz > c-wiz > div > a');
-        log.info(`Found ${items.length} items on the page ${pageNumber}`);
-        const urls = await Promise.all(items.map(async (item) => (
-            `https://www.google.com${await item.getAttribute('href')}`
-        ))) as string[];
-
-        if (options.maxResults === undefined) {
-            await enqueueDetails(urls);
-        } else {
-            await enqueueDetails(urls.slice(0, options.maxResults - totalItems));
-        }
-
-        totalItems += items.length;
-        const nextPageButton = page.getByRole('button').filter({ hasText: 'Next' }).first();
-        // const nextPageButton = await page.$(nextPageButtonSelector);
-        if (nextPageButton !== null && (options.maxResults === undefined || totalItems < options.maxResults!)) {
-            await nextPageButton.click();
-            await waitWhileGoogleLoading(page);
-            await page.waitForTimeout(1000);
-            pageNumber++;
-        } else {
-            hasNextPage = false;
-        }
-    } while (hasNextPage);
-};
 
 export const fillCheckInDate = async (page: Page, checkInDate: string, checkOutDate: string) => {
-    const checkInLocator = page.locator('input[aria-label="Check-in"]').last();
+    const checkInLocator = page.locator('span#prices input[aria-label="Check-in"]').last();
     await checkInLocator.waitFor();
     await checkInLocator.click();
 
@@ -73,6 +25,8 @@ export const fillCheckInDate = async (page: Page, checkInDate: string, checkOutD
 
     const submitButton = await page.waitForSelector('div[role="dialog"] > div:nth-of-type(4) > div > button:nth-of-type(2)');
     await submitButton.click();
+    await page.waitForTimeout(1000);
+    await waitWhileGoogleLoading(page);
 };
 
 export const fillInputForm = async (page: Page, options: GoogleHotelsOptions) => {
