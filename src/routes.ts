@@ -9,7 +9,7 @@ export const createGoogleHotelsRouter = (options: GoogleHotelsOptions) => {
 
     router.addDefaultHandler(async (ctx) => {
         const { request, page, log } = ctx;
-        const { checkInDate, checkOutDate } = options;
+        const { checkInDate, checkOutDate, numberOfAdults } = options;
         log.info(`parsing Google Hotel`, { url: request.loadedUrl });
         log.info(`Got options`, options);
 
@@ -26,7 +26,7 @@ export const createGoogleHotelsRouter = (options: GoogleHotelsOptions) => {
         await page.waitForTimeout(1000);
 
         const item = await getHotelItemData(ctx);
-        await Dataset.pushData({ ...item, checkInDate, checkOutDate });
+        await Dataset.pushData({ ...item, checkInDate, checkOutDate, numberOfAdults });
     });
 
     return router;
