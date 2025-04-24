@@ -1,6 +1,7 @@
 import { Page } from 'playwright';
 import { waitWhileGoogleLoading } from './utils.js';
 import { GoogleHotelsOptions } from './options.js';
+import { DEFAULT_NUM_OF_ADULTS, MAX_NUM_OF_PEOPLE } from '../constants.js';
 
 export const fillCheckInDate = async (page: Page, checkInDate: string, checkOutDate: string) => {
     const checkInLocator = page.locator('span#prices input[aria-label="Check-in"]').last();
@@ -31,47 +32,40 @@ export const fillCheckInDate = async (page: Page, checkInDate: string, checkOutD
 
 export const fillInputForm = async (page: Page, options: GoogleHotelsOptions) => {
     await fillCheckInDate(page, options.checkInDate, options.checkOutDate);
-    /*
-    const peopleButton = await page.waitForSelector('div[role="button"][aria-label^="Number of travelers"]');
+    const peopleButton = await page.waitForSelector('span#prices div[role="button"][aria-label^="Number of travelers"]');
     await peopleButton.click();
     await page.waitForTimeout(1000);
 
     let adults = DEFAULT_NUM_OF_ADULTS;
-    let children = DEFAULT_NUM_OF_CHILDREN;
 
     while (adults > options.numberOfAdults && adults > 0) {
-        const removeAdultButton = await page.waitForSelector('button[aria-label="Remove adult"]');
+        const removeAdultButton = await page.waitForSelector('span#prices button[aria-label="Remove adult"]');
         await removeAdultButton.click();
         adults--;
     }
-    while (adults < options.numberOfAdults && (adults + children) <= MAX_NUM_OF_PEOPLE) {
-        const addAdultButton = await page.waitForSelector('button[aria-label="Add adult"]');
+    while (adults < options.numberOfAdults && adults <= MAX_NUM_OF_PEOPLE) {
+        const addAdultButton = await page.waitForSelector('span#prices button[aria-label="Add adult"]');
         await addAdultButton.click();
         adults++;
     }
-    while (children > options.numberOfChildren && children >= 0) {
-        const removeChildButton = await page.waitForSelector('button[aria-label="Remove child"]');
-        await removeChildButton.click();
-        children--;
-    }
-    while (children < options.numberOfChildren && (adults + children) <= MAX_NUM_OF_PEOPLE) {
-        const addChildButton = await page.waitForSelector('button[aria-label="Add child"]');
-        await addChildButton.click();
-        children++;
-    }
 
     const peopleDoneButton = await page.waitForSelector(
-        'div[data-default-adult-num="2"] > div > div > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > button',
+        'span#prices div[data-default-adult-num="2"] > div > div > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > button',
     );
     await peopleDoneButton.click();
-    */
-    const currencyButton = await page.locator('footer div c-wiz button').last();
+    await page.waitForTimeout(1000);
+
+    const currencyButton = await page.locator('span#prices footer div c-wiz button').last();
     await currencyButton.waitFor();
     await currencyButton.click();
     await page.waitForTimeout(1000);
     const requiredCurrency = options.currencyCode;
-    const currencyRadio = await page.waitForSelector(`div[role="radio"][data-value="${requiredCurrency.toUpperCase()}"]`);
+    const currencyRadio = page.locator(`div[role="radio"][data-value="${requiredCurrency.toUpperCase()}"]`).first();
+    await currencyRadio.waitFor();
     await currencyRadio.click();
-    const currencyDoneButton = await page.waitForSelector('div[aria-label="Select currency"] > div:nth-of-type(3) > div:nth-of-type(2) > button');
+    const currencyDoneButton = page.locator('div[aria-label="Select currency"] > div:nth-of-type(3) > div:nth-of-type(2) > button').first();
+    await currencyDoneButton.waitFor();
     await currencyDoneButton.click();
+    await waitWhileGoogleLoading(page);
+    await page.waitForTimeout(1000);
 };

@@ -17,16 +17,23 @@ export const getHotelItemData = async <Context extends PlaywrightCrawlingContext
     log.info(`Check`, { currency });
     log.info(`Parsed detail (${title})`, { url: page.url() });
 
-    const pricesLinks = await page.locator('div[data-partner-id] a[data-hveid]').all();
+    const pricesLinks = await page.locator('span#prices div[data-partner-id] a[data-hveid][data-is-organic="true"]').all();
+    log.info(`Got pricesLinks`, { pricesLinks: pricesLinks.length });
     const prices = (await Promise.all(pricesLinks.map(async (link) => {
         const otaUrl = await link.getAttribute('href');
         const provider = await link.locator('div.lUblwd.kFOiFc span[data-click-type="268"]').first().innerText();
-        const priceLocator = link.locator('span.QoBrxc span.nDkDDb').first();
-        const unwantedLocator = priceLocator.locator('span.UVn6Tc');
-        const originalText = await priceLocator.innerText();
-        const unwantedText = await unwantedLocator.count() > 0 ? await unwantedLocator.innerText() : '';
-        const priceText = originalText.replace(unwantedText, '').trim();
-        const price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+        let price = null;
+        if (await link.locator('span.QoBrxc span.nDkDDb').count()) {
+            const priceLocator = link.locator('span.QoBrxc span.nDkDDb').first();
+            const unwantedLocator = priceLocator.locator('span.UVn6Tc');
+            const originalText = await priceLocator.innerText();
+            const unwantedText = (await unwantedLocator.count()) > 0 ? await unwantedLocator.innerText() : '';
+            log.info(`Got price`, { provider, originalText, unwantedText });
+            const priceText = originalText.replace(unwantedText, '').trim();
+            price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+        } else {
+            log.info(`No price found for provider`, { provider });
+        }
 
         let label = 'ota';
         if (await link.locator('span.Dwqcqd').count()) {
